@@ -1,8 +1,6 @@
-﻿using System.Text.Json.Serialization;
-
-namespace PokemonTamagotchi.Models
+﻿namespace PokemonTamagotchi.Models
 {
-    public class Pokemon
+    public class PokePet
     {
         public int Id { get; set; }
 
@@ -12,7 +10,7 @@ namespace PokemonTamagotchi.Models
 
         public int Weight { get; set; }
 
-        public List<string>? Abilities { get; set; }
+        public List<PokeAbility>? Abilities { get; set; }
 
 
     }

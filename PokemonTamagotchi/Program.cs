@@ -1,85 +1,91 @@
 ﻿using PokemonTamagotchi;
 using PokemonTamagotchi.Models;
-using RestSharp;
 using System.Text.Json;
 
-PrintStartScreen();
-var userOption = GetUserOption();
+var pokemonSpecies = PokemonService.GetPokemonSpecies();
+ConsoleKey pressedKey;
 
-while (userOption < 1 || userOption > 3)
+do
 {
-    userOption = GetUserOption();
-}
+    Console.Clear();
+    Console.WriteLine("Choose your companion:");
+    PrintPokemonSpecies(pokemonSpecies.Results!);
 
-var pokemonInfo = GetPokemonInfo(userOption);
-var pokemon = CreatePokemon(pokemonInfo);
+    Console.WriteLine();
+    Console.Write("Press the down arrow to see more options, Esc to exit or Enter: ");
+
+    pressedKey = Console.ReadKey(true).Key;
+
+    if (pressedKey == ConsoleKey.DownArrow && !string.IsNullOrEmpty(pokemonSpecies.Next))
+    {
+        pokemonSpecies = PokemonService.GetPokemonSpecies(pokemonSpecies.Next!);
+    }
+    else if (pressedKey == ConsoleKey.UpArrow && !string.IsNullOrEmpty(pokemonSpecies.Previous))
+    {
+        pokemonSpecies = PokemonService.GetPokemonSpecies(pokemonSpecies.Previous!);
+    }
+}
+while (pressedKey != ConsoleKey.Enter);
+
+while (Console.KeyAvailable) { Console.ReadKey(true); }
 
 Console.Clear();
-PrintPokemonInfo(pokemon);
+PrintPokemonSpecies(pokemonSpecies.Results!);
+Console.WriteLine();
+Console.Write("Type in the number of the pokémon to be your companion: ");
+
+string userInput = Console.ReadLine();
+int userOption;
+
+while (!int.TryParse(userInput, out userOption) || userOption < 1 || userOption > pokemonSpecies.Count)
+{
+    Console.Clear();
+    PrintPokemonSpecies(pokemonSpecies.Results!);
+    Console.WriteLine();
+    Console.Write("Type in the number of the pokémon to be your companion: ");
+
+    userInput = Console.ReadLine();
+}
+
+var petPokemon = CreatePokePet(userOption);
+
+Console.Clear();
+PrintPokePetInfo(petPokemon);
+Console.WriteLine();
+Console.Write("Type [1] to confirm your choice or [2] to go back: ");
+
 Console.ReadLine();
 
 
-void PrintStartScreen()
+void PrintPokemonSpecies(List<PokemonSpecies> pokemonSpecies)
 {
-    Console.WriteLine("**************** POKÉMON TAMAGOTCHI ****************");
-    Console.WriteLine("*                                                  *");
-    Console.WriteLine("*      It's time to choose your companion!         *");
-    Console.WriteLine("*                                                  *");
-    Console.WriteLine("*      Who do you choose to be your friend?        *");
-    Console.WriteLine("*                                                  *");
-    Console.WriteLine("*      1. Bulbasaur                                *");
-    Console.WriteLine("*      2. Charmander                               *");
-    Console.WriteLine("*      3. Squirtle                                 *");
-    Console.WriteLine("*                                                  *");
-    Console.WriteLine("****************************************************");
+    for (int i = 0; i < pokemonSpecies.Count; i++)
+    {
+        Console.WriteLine($"{i + 1}. {pokemonSpecies[i].Name}");
+    }
 }
 
-void PrintPokemonInfo(Pokemon pokemon)
+void PrintPokePetInfo(PokePet pet)
 {
-    Console.WriteLine($"{pokemon.Name?.ToUpper()}");
-    Console.WriteLine();
-    Console.WriteLine($"PokéId: {pokemon.Id}");
-    Console.WriteLine($"Height: {pokemon.Height}");
-    Console.WriteLine($"Weight: {pokemon.Weight}");
+    Console.WriteLine($"PokéPet: {pet.Name}");
+    Console.WriteLine($"Height: {pet.Height}");
+    Console.WriteLine($"Weight: {pet.Weight}");
     Console.WriteLine("Abilities:");
 
-    foreach (var ability in pokemon.Abilities!)
-        Console.WriteLine($"    - {ability}");
-
-    Console.WriteLine();
-    Console.WriteLine($"1. Choose {pokemon.Name?.ToUpper()}");
-    Console.WriteLine("2. Go back");
-}
-
-int GetUserOption()
-{
-    var userInput = Console.ReadKey(true).KeyChar;
-
-    while (!char.IsDigit(userInput))
+    foreach (var ability in pet.Abilities)
     {
-        userInput = Console.ReadKey(true).KeyChar;
+        Console.WriteLine($"\t* {ability.Name}");
     }
-
-    return int.Parse(userInput.ToString());
 }
 
-string GetPokemonInfo(int pokemonId)
+
+PokePet CreatePokePet(int speciesId)
 {
-    var client = new RestClient($"https://pokeapi.co/api/v2/pokemon/{pokemonId}");
-    RestRequest request = new RestRequest("", Method.Get);
-    var response = client.Execute(request);
+    var pokemonSpeciesInfo = PokemonService.GetPokemonSpeciesInfo(speciesId);
 
-    if (!response.IsSuccessful)
-        Console.WriteLine(response.ErrorMessage);
-
-    return response.Content!;
-}
-
-Pokemon CreatePokemon(string pokemonInfo)
-{
     var options = new JsonSerializerOptions();
     options.Converters.Add(new PokemonJsonConverter());
 
-    Pokemon? pokemon = JsonSerializer.Deserialize<Pokemon>(pokemonInfo, options);
-    return pokemon ?? new Pokemon();
+    PokePet? petPokemon = JsonSerializer.Deserialize<PokePet>(pokemonSpeciesInfo, options);
+    return petPokemon ?? new PokePet();
 }
