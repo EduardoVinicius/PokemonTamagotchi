@@ -6,5 +6,6 @@
         public string? Next { get; set; }
         public string? Previous { get; set; }
         public List<PokemonSpecies>? Results { get; set; }
+        public int OffSet { get; set; }
     }
 }
