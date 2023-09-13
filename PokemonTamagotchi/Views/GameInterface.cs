@@ -1,9 +1,33 @@
 ﻿using PokemonTamagotchi.Models;
+using PokemonTamagotchi.Services;
 
-namespace PokemonTamagotchi
+namespace PokemonTamagotchi.Views
 {
     public static class GameInterface
     {
+        public static void ShowMainMenu()
+        {
+            Console.WriteLine("##### ##### #  # ##### ##### ##### #####");
+            Console.WriteLine("#   # #   # # #  #     #   # #       #  ");
+            Console.WriteLine("##### #   # ##   ##### ##### #####   #  ");
+            Console.WriteLine("#     #   # # #  #     #     #       #  ");
+            Console.WriteLine("#     ##### #  # ##### #     #####   #  ");
+
+            Console.WriteLine();
+            Console.WriteLine("Welcome to PokéPet! Ready to choose your companion?");
+            Console.WriteLine();
+            Console.Write("First, tell me your name: ");
+
+            var userName = Console.ReadLine();
+
+            Console.WriteLine();
+            Console.WriteLine($"Nice to meet you, {userName}! Let's get to it!");
+            Console.WriteLine();
+            Console.WriteLine("[1] Adopt a virtual pet");
+            Console.WriteLine("[2] Check on your pets");
+            Console.WriteLine("[3] Exit");
+        }
+
         public static void ShowSpeciesMenu(PokemonSpeciesResult pokemonSpecies)
         {
             ConsoleKey pressedKey;

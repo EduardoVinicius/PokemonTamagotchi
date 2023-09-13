@@ -2,7 +2,7 @@
 using RestSharp;
 using System.Text.Json;
 
-namespace PokemonTamagotchi
+namespace PokemonTamagotchi.Services
 {
     public static class PokemonService
     {
