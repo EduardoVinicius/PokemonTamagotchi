@@ -9,47 +9,78 @@ GameInterface.ShowMainMenu();
 while (Console.KeyAvailable)
     Console.ReadKey(true);
 
+List<PokePet> pets = new List<PokePet>();
+
 int userOption = GetUserOption();
 var pokemonSpecies = PokemonService.GetPokemonSpecies();
 
-switch (userOption)
+do
 {
-    case 1:
-        GameInterface.ShowSpeciesMenu(pokemonSpecies);
-        Console.Clear();
-        GameInterface.PrintPokemonSpecies(pokemonSpecies);
-        Console.WriteLine();
-        Console.Write("Type in the number of the pokémon to be your companion: ");
-        userOption = GetUserInput();
-        while (userOption > pokemonSpecies.Count)
-        {
+    switch (userOption)
+    {
+        case 1:
             Console.Clear();
-            GameInterface.PrintPokemonSpecies(pokemonSpecies);
+            GameInterface.ShowSpeciesMenu(pokemonSpecies);
+            Console.Clear();
             Console.WriteLine();
             Console.Write("Type in the number of the pokémon to be your companion: ");
-
             userOption = GetUserInput();
-        }
-        var petPokemon = CreatePokePet(userOption);
+            while (userOption > pokemonSpecies.Count)
+            {
+                Console.Clear();
+                GameInterface.PrintPokemonSpecies(pokemonSpecies);
+                Console.WriteLine();
+                Console.Write("Type in the number of the pokémon to be your companion: ");
 
-        Console.Clear();
-        GameInterface.PrintPokePetInfo(petPokemon);
-        Console.WriteLine();
-        Console.WriteLine("[1] Adopt pokémon");
-        Console.WriteLine("[2] Go back");
+                userOption = GetUserInput();
+            }
+            var petPokemon = CreatePokePet(userOption);
 
-        Console.ReadLine();
-        break;
-    case 2:
-        break;
-    case 3:
-        Console.WriteLine("Thanks for playing! See you later!");
-        return;
-    default:
-        Console.WriteLine("Invalid option");
-        break;
-}
+            Console.Clear();
+            GameInterface.PrintPokePetInfo(petPokemon);
+            Console.WriteLine();
+            Console.WriteLine($"[1] Adopt {petPokemon.Name}");
+            Console.WriteLine("[2] Go back");
 
+            userOption = GetUserOption();
+
+            switch (userOption)
+            {
+                case 1:
+                    pets.Add(petPokemon);
+                    Console.WriteLine($"Congratulations! Now {petPokemon.Name} is your companion!");
+                    Console.WriteLine();
+                    Console.WriteLine("[1] Go back to main menu");
+                    userOption = GetUserOption();
+                    break;
+                case 2:
+                    userOption = 1;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 2:
+            Console.WriteLine();
+            Console.WriteLine("Enjoy the time with your companions!");
+            Console.WriteLine();
+            for (int i = 0; i < pets.Count; i++)
+            {
+                Console.WriteLine($"{pets[i].Name}");
+            }
+            Console.WriteLine();
+            Console.WriteLine("[1] Go back to main menu");
+            userOption = GetUserOption();
+            break;
+        case 3:
+            Console.WriteLine();
+            Console.WriteLine("Thanks for playing! See you later!");
+            return;
+        default:
+            Console.WriteLine("Invalid option");
+            break;
+    }
+} while (userOption != 0);
 
 int GetUserOption()
 {
