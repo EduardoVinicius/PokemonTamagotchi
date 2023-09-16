@@ -6,7 +6,7 @@ namespace PokemonTamagotchi.Services
 {
     public static class PokemonService
     {
-        public static string GetPokemonSpeciesInfo(int speciesId)
+        private static string GetPokemonSpeciesInfo(int speciesId)
         {
             var client = new RestClient();
             var request = new RestRequest($"https://pokeapi.co/api/v2/pokemon/{speciesId}", Method.Get);
@@ -23,6 +23,17 @@ namespace PokemonTamagotchi.Services
 
             var result = JsonSerializer.Deserialize<PokemonSpeciesResult>(response.Content!, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             return result ?? new PokemonSpeciesResult();
+        }
+
+        public static PokePet CreatePokePet(int speciesId)
+        {
+            var pokemonSpeciesInfo = GetPokemonSpeciesInfo(speciesId);
+
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new PokemonJsonConverter());
+
+            PokePet? petPokemon = JsonSerializer.Deserialize<PokePet>(pokemonSpeciesInfo, options);
+            return petPokemon ?? new PokePet();
         }
     }
 }
