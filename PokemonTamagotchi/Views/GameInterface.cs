@@ -88,12 +88,19 @@ namespace PokemonTamagotchi.Views
         public void PrintCompanions(List<PokePet> pets)
         {
             Console.Clear();
-            Console.WriteLine();
-            Console.WriteLine("Enjoy the time with your companions!");
-            Console.WriteLine();
-            for (int i = 0; i < pets.Count; i++)
+            if (pets.Count <= 0)
             {
-                Console.WriteLine($"{pets[i].Name}");
+                Console.WriteLine("You have no companions yet! :(");
+                Console.WriteLine("Go meet some!");
+            }
+            else
+            {
+                Console.WriteLine("Enjoy the time with your companions!");
+                Console.WriteLine();
+                for (int i = 0; i < pets.Count; i++)
+                {
+                    Console.WriteLine($"{pets[i].Name}");
+                }
             }
         }
 
